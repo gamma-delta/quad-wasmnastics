@@ -14,7 +14,7 @@ pub fn get_clipboard() -> Waiter<String> {
 
     #[cfg(not(target_arch = "wasm32"))]
     {
-        use clipboard::{ClipboardContext, ClipboardProvider};
+        use copypasta::{ClipboardContext, ClipboardProvider};
 
         let res: Result<String, ()> = try {
             let mut provider = ClipboardContext::new().map_err(|_| ())?;
@@ -37,7 +37,7 @@ pub fn set_clipboard(text: String) -> Waiter<()> {
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
-        use clipboard::{ClipboardContext, ClipboardProvider};
+        use copypasta::{ClipboardContext, ClipboardProvider};
 
         let res: Result<(), ()> = try {
             let mut provider = ClipboardContext::new().map_err(|_| ())?;
