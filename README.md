@@ -1,5 +1,8 @@
 # quad-wasmnastics
 
+[![crates.io](https://img.shields.io/crates/v/quad-wasmnastics)](https://crates.io/crates/quad-wasmnastics)
+[![API documentation](https://docs.rs/quad-wasmnastics/badge.svg)](https://docs.rs/quad-wasmnastics/)
+
 Utilities that do the gymnastics required to make advanced Macroquad work on wasm.
 
 IMPORTANT: In order to use this on WASM, you MUST use the [`js/wasmnastics.js`](js/wasmnastics.js) script in your HTML file
