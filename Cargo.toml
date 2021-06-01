@@ -16,7 +16,7 @@ base64 = "0.13.0"
 flate2 = "1.0.20"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-sapp-jsutils = { git = "https://github.com/not-fl3/sapp-jsutils" }
+sapp-jsutils = "0.1.5"
 serde = { version = "1.0.126", optional = true }
 serde_json = { version = "1.0.64", optional = true }
 

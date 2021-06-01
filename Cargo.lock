@@ -229,7 +229,8 @@ checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 [[package]]
 name = "sapp-jsutils"
 version = "0.1.5"
-source = "git+https://github.com/not-fl3/sapp-jsutils#eacdd5c110b66a4951afb3334268a4addd875176"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb8ababa867431fa6c0a178248bfe7e77b5d1de357c9848883ba8e3946bb21d4"
 
 [[package]]
 name = "serde"
