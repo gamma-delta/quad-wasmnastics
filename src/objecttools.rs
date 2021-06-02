@@ -1,4 +1,7 @@
-//! sapp_jsutils is not feature complete enough for me!
+//! `sapp_jsutils` is not feature complete enough for me! Here's a handy extension
+//! trait to make working with [`JsObject`]s slightly less horrible.
+//!
+//! [`JsObject`]: sapp_jsutils::JsObject
 
 use crate::js_convert::{wrappers::LongOption, BadJsTypeError, FromJsObject, ToJsObject};
 
@@ -172,7 +175,7 @@ impl ObjectTools for JsObject {
     }
 }
 
-/// Types that JS has.
+/// Types that JS has, via the `typeof` operator.
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum JsType {
     Undefined,
@@ -185,5 +188,7 @@ pub enum JsType {
     Function,
     /// According to the spec, `typeof` can really return whatever string it wants.
     /// Although IE is the only browser that does this, we have to handle it...
+    ///
+    /// So here's a catchall type.
     Unknown(String),
 }

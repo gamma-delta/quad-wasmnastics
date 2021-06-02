@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 #![feature(concat_idents)]
 #![feature(try_blocks)]
 

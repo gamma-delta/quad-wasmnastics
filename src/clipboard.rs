@@ -1,3 +1,8 @@
+//! Cross-platform clipboard utilities, letting you save and load data from the clipboard
+//! on the fly.
+//!
+//! The windows implementation doesn't even segfault, Fedor!
+
 use crate::waiter::Waiter;
 
 /// Try and get the string value off the clipboard.

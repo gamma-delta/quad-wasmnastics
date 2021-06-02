@@ -51,7 +51,7 @@ impl<T: FromJsObject> FromJsObject for LongOption<T> {
     }
 }
 
-/// Due to Rust's lack of specialization, we can't specially handle converting a `Uint8Array`
+/// Due to Rust's lack of specialization, we can't specially handle converting a JS `Uint8Array`
 /// into a `Vec<u8>`.
 ///
 /// This wrapper struct can be used to do that conversion; it converts from
@@ -85,6 +85,15 @@ impl ToJsObject for Uint8Array {
 }
 
 /// Interconvert JSON strings and Rust objects.
+///
+/// The `ToJsObject` impl tries to serialize the inner value to a JS String,
+/// and then passes it off to JS.
+///
+/// The `FromJsObject` impl does the opposite; it takes a JS String
+/// and tries to deserialize it.
+///
+/// Astute users of Javascript will remember the JS JSON API, and then
+/// sob uncontrollably for having written so much Javascript.
 #[cfg(feature = "serde_wrapper")]
 pub struct SerDeWrapper<T>(pub T);
 

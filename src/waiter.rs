@@ -1,8 +1,15 @@
+//! In case working with `async` code wasn't already nightmarish enough!
+
 use crate::js_convert::MaybeFromJsObject;
 
 use std::fmt::{self, Debug};
 
-/// Something that is waiting on a value from Javascript.
+/// Something that is waiting on a value from Javascript,
+/// or has the value immediately via a desktop API.
+///
+/// This struct was made for the Clipboard API, so it might be ill-suited
+/// for other APIs you may wish to implement. If you need more functionality
+/// feel free to open an issue or something.
 #[derive(Debug)]
 pub struct Waiter<T> {
     inner: WaiterInner<T>,

@@ -5,8 +5,7 @@
 
 Utilities that do the gymnastics required to make advanced Macroquad work on wasm.
 
-IMPORTANT: In order to use this on WASM, you MUST use the [`js/wasmnastics.js`](js/wasmnastics.js) script in your HTML file
-before any WASM code is run! Put it right after your `mq_js_bundle.js` for best results.
+IMPORTANT: In order to use this on WASM, you MUST use the [`js/wasmnastics.js`](https://github.com/gamma-delta/quad-wasmnastics/blob/main/js/wasmnastics.js) script in your HTML file before any WASM code is run! Put it right after your `mq_js_bundle.js` for best results.
 
 Also Important: This code is wildly untested, so be careful using it please.
 

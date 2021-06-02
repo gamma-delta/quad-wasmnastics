@@ -1,3 +1,6 @@
+//! The functions the crate uses to gzip and base64-encode data,
+//! in case they are helpful.
+
 use anyhow::Context;
 use base64::URL_SAFE;
 use flate2::{

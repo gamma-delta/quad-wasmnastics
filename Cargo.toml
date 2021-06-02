@@ -1,6 +1,6 @@
 [package]
 name = "quad-wasmnastics"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2018"
 description = "Utilities that do the gymnastics required to make advanced Macroquad work on wasm."
 repository = "https://github.com/gamma-delta/quad-wasmnastics"

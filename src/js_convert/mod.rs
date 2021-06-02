@@ -12,7 +12,7 @@ pub use from_js::*;
 #[cfg(target_arch = "wasm32")]
 pub use to_js::*;
 
-/// This trait is equal to [`FromJsObject`] on wasm, and has no bounds on desktop.
+/// This trait is equal to FromJsObject on wasm, and has no bounds on desktop.
 ///
 /// This lets you represent APIs that must work with the web, but don't need to.
 /// For example, if you just want clipboard functionality, no need to compile

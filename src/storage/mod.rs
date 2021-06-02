@@ -1,3 +1,5 @@
+//! Store data across play sessions via persistent storage.
+
 pub mod flate;
 
 #[cfg(not(target_arch = "wasm32"))]
