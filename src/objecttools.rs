@@ -1,9 +1,9 @@
 //! sapp_jsutils is not feature complete enough for me!
 
+use crate::js_convert::{wrappers::LongOption, BadJsTypeError, FromJsObject, ToJsObject};
+
 use anyhow::{anyhow, bail};
 use sapp_jsutils::{JsObject, JsObjectWeak};
-
-use crate::js_convert::{wrappers::LongOption, BadJsTypeError, FromJsObject, ToJsObject};
 
 extern "C" {
     /// Return `null`
@@ -18,6 +18,9 @@ extern "C" {
     fn try_get_field(obj: JsObjectWeak, key: JsObjectWeak) -> JsObject;
     /// Check if something `==` or `===` something else
     fn equals(a: JsObjectWeak, b: JsObjectWeak, triple: bool) -> bool;
+    fn has_field(obj: JsObjectWeak, buf: *const u8, len: u32) -> bool;
+
+    pub fn console_log(msg: JsObjectWeak);
 }
 
 /// Extension trait for JsObjects!
@@ -78,6 +81,12 @@ pub trait ObjectTools {
     fn is_null(&self) -> bool {
         self.equals_strict(JsObject::null())
     }
+
+    /// Check if this has the given field.
+    /// This is like `have_field` from sapp_jsutils, but:
+    /// - actually checks if the field *does* exist instead of doesn't exist
+    /// - uses `=== undefined` instead of `== undefined`
+    fn has_field(&self, field: &str) -> bool;
 }
 
 impl ObjectTools for JsObject {
@@ -98,7 +107,7 @@ impl ObjectTools for JsObject {
             "string" => JsType::String,
             "symbol" => JsType::Symbol,
             "function" => JsType::Function,
-            _ => JsType::Unknown,
+            _ => JsType::Unknown(ty),
         }
     }
 
@@ -136,7 +145,7 @@ impl ObjectTools for JsObject {
         };
         // The FFI returns a LongOption
         let maybe = unsafe { try_get_field(self.weak(), key.weak()) };
-        let maybe: LongOption<JsObject> = match LongOption::from_js(maybe) {
+        let maybe = match LongOption::from_js(maybe) {
             Ok(it) => it,
             Err(_) => return None,
         };
@@ -157,10 +166,14 @@ impl ObjectTools for JsObject {
         };
         unsafe { equals(self.weak(), rhs.weak(), false) }
     }
+
+    fn has_field(&self, field: &str) -> bool {
+        unsafe { has_field(self.weak(), field.as_ptr(), field.len() as _) }
+    }
 }
 
 /// Types that JS has.
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum JsType {
     Undefined,
     Object,
@@ -172,5 +185,5 @@ pub enum JsType {
     Function,
     /// According to the spec, `typeof` can really return whatever string it wants.
     /// Although IE is the only browser that does this, we have to handle it...
-    Unknown,
+    Unknown(String),
 }

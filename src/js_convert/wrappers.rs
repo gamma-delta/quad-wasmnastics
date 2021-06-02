@@ -39,8 +39,10 @@ impl<T: FromJsObject> FromJsObject for LongOption<T> {
         Ok(if obj.is_null() {
             LongOption(None)
         } else {
-            let some = obj.try_get_field("some");
-            if let Some(some) = some {
+            // We can't use `try_get_field` or else we will infinite loop
+            let has_some = obj.has_field("some");
+            if has_some {
+                let some = obj.field("some");
                 LongOption(Some(T::from_js(some).map_err(|e| anyhow!(e.into()))?))
             } else {
                 bail!("Expected field `some` but didn't find it")

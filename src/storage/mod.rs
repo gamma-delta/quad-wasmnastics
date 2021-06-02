@@ -42,7 +42,7 @@ impl Location {
             .join(&self.bin_name)
             .join(format!("v{}", &self.version))
             .join(&self.profile)
-            .with_extension(".dat"))
+            .with_extension("dat"))
     }
 
     /// Get the key to save data to localstorage under
@@ -89,8 +89,16 @@ pub fn save_to<T: AsRef<[u8]>>(data: T, location: &Location) -> anyhow::Result<(
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
+        let path = location.path()?;
+        std::fs::create_dir_all(
+            &path
+                .parent()
+                .ok_or_else(|| anyhow!("Couldn't get parent of {:?}", &path))?,
+        )?;
+
         let data = zip(data)?;
-        std::fs::write(location.path()?, &data).context("When writing to the file")?;
+        std::fs::write(&path, &data)
+            .with_context(|| anyhow!("When writing to the file at {:?}", &path))?;
         Ok(())
     }
 }

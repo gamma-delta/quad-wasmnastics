@@ -4,7 +4,7 @@ params_register_js_plugin = function (importObject) {
         return js_object(null);
     }
     importObject.env.type_of = function (obj) {
-        return js_object(typeof obj);
+        return js_object(typeof get_js_object(obj));
     }
     importObject.env.set_field_any = function (obj, key, val) {
         let real_obj = get_js_object(obj);
@@ -13,7 +13,7 @@ params_register_js_plugin = function (importObject) {
         real_obj[real_key] = real_val;
     }
     importObject.env.as_string = function (obj) {
-        return get_js_object(obj).toString();
+        return js_object(get_js_object(obj).toString());
     }
     // we need a seperate function for each primitive type
     let primitives = [
@@ -62,19 +62,17 @@ params_register_js_plugin = function (importObject) {
     importObject.env.try_get_field = function (obj, key) {
         try {
             obj = get_js_object(obj);
-            obj = get_js_object(obj);
+            key = get_js_object(key);
             let val = obj[key];
-            // return a LongOption
-            let out;
-            if (typeof val === "undefined") {
-                out = null;
-            } else {
-                out = {
-                    some: val
-                }
-            };
-            return js_object(out);
 
+            /// Return a LongOption
+            if (val === undefined) {
+                return js_object(null);
+            } else {
+                return js_object({
+                    some: val
+                });
+            }
         } catch (e) {
             return js_object(null);
         }
@@ -88,6 +86,10 @@ params_register_js_plugin = function (importObject) {
             return a == b;
         }
     }
+    importObject.env.has_field = function (obj, buf, length) {
+        let field_name = UTF8ToString(buf, length);
+        return js_objects[obj][field_name] !== undefined;
+    }
 
 
 
@@ -99,7 +101,7 @@ params_register_js_plugin = function (importObject) {
             localStorage.setItem(key, val);
             return js_object({
                 ok: null
-            })
+            });
         } catch (e) {
             return js_object({
                 err: "Couldn't save to localstorage: " + e.toString()
@@ -134,6 +136,10 @@ params_register_js_plugin = function (importObject) {
         let waiter = waitify(navigator.clipboard.writeText(get_js_object(text)));
         return js_object(waiter);
     }
+
+    importObject.env.console_log = function (obj) {
+        console.log(get_js_object(obj));
+    };
 };
 
 miniquad_add_plugin({

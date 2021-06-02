@@ -1,6 +1,9 @@
 use crate::js_convert::MaybeFromJsObject;
 
+use std::fmt::{self, Debug};
+
 /// Something that is waiting on a value from Javascript.
+#[derive(Debug)]
 pub struct Waiter<T> {
     inner: WaiterInner<T>,
 }
@@ -64,36 +67,45 @@ impl<T: MaybeFromJsObject> Waiter<T> {
             WaiterInner::Waiting(waiter, _phantom) => {
                 use crate::objecttools::ObjectTools;
 
-                let res: Result<Option<T>, ()> = try {
-                    let waiting = waiter.try_get_field("waiting").ok_or(())?;
+                let res: Result<Option<T>, String> = try {
+                    let waiting = waiter
+                        .try_get_field("waiting")
+                        .ok_or_else(|| "Couldn't find `waiting` field".to_string())?;
                     if waiting.truthy() {
                         // too bad
                         None
                     } else {
                         // ooh we get our value?
-                        let value = waiter.try_get_field("value").ok_or(())?;
-                        let value = T::from_js(value).map_err(|_| ())?;
+                        let value = waiter
+                            .try_get_field("value")
+                            .ok_or_else(|| "Couldn't find `value` field".to_string())?;
+                        let value = T::from_js(value).map_err(|e| {
+                            let err: Box<_> = e.into();
+                            err.to_string()
+                        })?;
                         // nice!
                         Some(value)
                     }
                 };
-                if let Ok(it) = res {
-                    if let Some(it) = it {
-                        self.inner = WaiterInner::Taken;
-                        Some(it)
-                    } else {
-                        // Oh well, better luck next frame?
+                match res {
+                    Ok(it) => {
+                        if let Some(it) = it {
+                            self.inner = WaiterInner::Taken;
+                            Some(it)
+                        } else {
+                            // Oh well, better luck next frame?
+                            None
+                        }
+                    }
+                    Err(oh_no) => {
+                        self.inner = WaiterInner::Error(oh_no);
                         None
                     }
-                } else {
-                    // oh no
-                    self.inner = WaiterInner::Error;
-                    None
                 }
             }
 
             #[cfg(target_arch = "wasm32")]
-            WaiterInner::Error => None,
+            WaiterInner::Error(..) => None,
         }
     }
 }
@@ -113,7 +125,23 @@ enum WaiterInner<T> {
     /// on wasm.
     #[cfg(target_arch = "wasm32")]
     Waiting(sapp_jsutils::JsObject, std::marker::PhantomData<T>),
-    /// An error occurred when trying to turn the JsObject into an actual object.
+    /// An error occurred somewhere.
+    /// And here's your error!
     #[cfg(target_arch = "wasm32")]
-    Error,
+    Error(String),
+}
+
+/// JsObject doesn't impl Debug >:(
+impl<T: Debug> Debug for WaiterInner<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Taken => write!(f, "Taken"),
+            #[cfg(not(target_arch = "wasm32"))]
+            Self::Available(it) => write!(f, "Available({:?})", it),
+            #[cfg(target_arch = "wasm32")]
+            WaiterInner::Waiting(_, _) => write!(f, "Waiting"),
+            #[cfg(target_arch = "wasm32")]
+            WaiterInner::Error(e) => write!(f, "Error({})", e),
+        }
+    }
 }
