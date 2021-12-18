@@ -919,6 +919,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "paste"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0744126afe1a6dd7f394cb50a716dbe086cb06e255e53d8d0185d82828358fb5"
+
+[[package]]
 name = "peeking_take_while"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -968,7 +974,7 @@ checksum = "658fa1faf7a4cc5f057c9ee5ef560f717ad9d8dc66d975267f709624d6e1ab88"
 
 [[package]]
 name = "quad-wasmnastics"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "base64",
@@ -976,6 +982,7 @@ dependencies = [
  "dirs",
  "flate2",
  "macroquad",
+ "paste",
  "sapp-jsutils",
  "serde",
  "serde_json",

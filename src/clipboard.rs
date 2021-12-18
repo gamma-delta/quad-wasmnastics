@@ -21,10 +21,10 @@ pub fn get_clipboard() -> Waiter<String> {
     {
         use copypasta::{ClipboardContext, ClipboardProvider};
 
-        let res: Result<String, ()> = try {
+        let res: Result<String, ()> = (|| {
             let mut provider = ClipboardContext::new().map_err(|_| ())?;
-            provider.get_contents().map_err(|_| ())?
-        };
+            provider.get_contents().map_err(|_| ())
+        })();
         match res {
             Ok(text) => Waiter::new_immediate(text),
             Err(_) => Waiter::new_empty(),
@@ -44,10 +44,10 @@ pub fn set_clipboard(text: String) -> Waiter<()> {
     {
         use copypasta::{ClipboardContext, ClipboardProvider};
 
-        let res: Result<(), ()> = try {
+        let res: Result<(), ()> = (|| {
             let mut provider = ClipboardContext::new().map_err(|_| ())?;
-            provider.set_contents(text).map_err(|_| ())?;
-        };
+            provider.set_contents(text).map_err(|_| ())
+        })();
         match res {
             Ok(()) => Waiter::new_immediate(()),
             Err(_) => Waiter::new_empty(),

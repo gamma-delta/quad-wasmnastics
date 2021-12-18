@@ -74,11 +74,11 @@ impl<T: MaybeFromJsObject> Waiter<T> {
             WaiterInner::Waiting(waiter, _phantom) => {
                 use crate::objecttools::ObjectTools;
 
-                let res: Result<Option<T>, String> = try {
+                let res: Result<Option<T>, String> = (|| {
                     let waiting = waiter
                         .try_get_field("waiting")
                         .ok_or_else(|| "Couldn't find `waiting` field".to_string())?;
-                    if waiting.truthy() {
+                    Ok(if waiting.truthy() {
                         // too bad
                         None
                     } else {
@@ -92,8 +92,8 @@ impl<T: MaybeFromJsObject> Waiter<T> {
                         })?;
                         // nice!
                         Some(value)
-                    }
-                };
+                    })
+                })();
                 match res {
                     Ok(it) => {
                         if let Some(it) = it {

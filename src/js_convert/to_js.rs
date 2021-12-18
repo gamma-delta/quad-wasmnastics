@@ -1,6 +1,7 @@
 use crate::objecttools::ObjectTools;
 
 use anyhow::{anyhow, Context};
+use paste::paste;
 use sapp_jsutils::JsObject;
 
 use std::{collections::HashMap, convert::Infallible};
@@ -62,9 +63,9 @@ macro_rules! impl_to_js_primitive {
                 type Error = Infallible;
 
                 fn to_js(self) -> Result<JsObject, Self::Error> {
-                    Ok(unsafe {
-                        concat_idents!(primitive_to_js_, $implee)(self)
-                    })
+                    Ok(unsafe { paste! {
+                        [< primitive_to_js_ $implee >](self)
+                    }})
                 }
             }
         )*
